@@ -81,13 +81,5 @@ bot.on("message", (msg) => {
   });
 });
 
-bot.onText(/^\/test/, (msg) => {
-  let info = bot.getChat(msg.chat.id);
-  info.then((response) => {
-    const description = response.description;
-    bot.setChatDescription(
-      msg.chat.id,
-      `${description}\n@${msg.from.username}`
-    );
-  });
-});
+// Command for tests
+bot.onText(/^\/test/, (msg) => {});
