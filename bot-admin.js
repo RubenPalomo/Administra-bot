@@ -1,6 +1,7 @@
 const TelegramBot = require("node-telegram-bot-api");
 const token = "1463801315:AAFAR9_UxC3PLgvYP1d0kMg_lWWMhou7jvw";
 const bot = new TelegramBot(token, { polling: true });
+const translate = require("@iamtraction/google-translate");
 const util = require("util");
 const waitUntil = util.promisify(setTimeout);
 
@@ -10,6 +11,21 @@ const waitUntil = util.promisify(setTimeout);
  *
  */
 
+// Translator function
+function translateText(string, langTo) {
+  if (langTo === "en") return string;
+  translate(string, { from: "en", to: langTo })
+    .then((res) => {
+      console.log(res);
+      string = res.text;
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+  return string;
+}
+
+// Banned word search function
 function isThereABannedWord(string) {
   if (string == undefined) return false;
   const bannedWords = ["caca", "culo", "calvo"];
@@ -31,7 +47,10 @@ function isThereABannedWord(string) {
 bot.onText(/^\/start/, (msg) => {
   bot.sendMessage(
     msg.chat.id,
-    `Hello ${msg.from.first_name}. I'm your favorite group manager bot. Add me to your groups and give me admin so I can manage them.❤`
+    translateText(
+      `Hello ${msg.from.first_name}. I'm your favorite group manager bot. Add me to your groups and give me admin so I can manage them.❤`,
+      msg.from.language_code
+    )
   );
 });
 
@@ -42,8 +61,12 @@ bot.on("message", (msg) => {
 
     bot.sendMessage(
       msg.chat.id,
-      `Hi ${msg.new_chat_member.first_name}! Welcome to ${msg.chat.title}\n\n` +
-        "The rules are as follows:\n1. Don't be rude. Watch your words and respect each other.\n"
+      translateText(
+        `Hi ${msg.new_chat_member.first_name}! Welcome to ${msg.chat.title}\n\n` +
+          "The rules are as follows:\n1. Don't be rude. Watch your words and respect each other.\n" +
+          "2. Just relax and enjoy!",
+        msg.from.language_code
+      )
     );
     info
       .then((response) => {
