@@ -11,7 +11,6 @@ const waitUntil = util.promisify(setTimeout);
  */
 
 function isThereABannedWord(string) {
-  console.log(string);
   if (string == undefined) return false;
   const bannedWords = ["caca", "culo", "calvo"];
   const arrayWords = string.split(" ");
