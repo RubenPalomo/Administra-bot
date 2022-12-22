@@ -6,7 +6,7 @@ const waitUntil = util.promisify(setTimeout);
 
 /*
  *
- *   *   *   FUNCTIONS
+ *   *   *   FUNCTIONS    *   *   *
  *
  */
 
