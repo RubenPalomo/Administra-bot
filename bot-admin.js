@@ -3,7 +3,6 @@ const token = "1463801315:AAFAR9_UxC3PLgvYP1d0kMg_lWWMhou7jvw";
 const bot = new TelegramBot(token, { polling: true });
 const translate = require("@iamtraction/google-translate");
 const util = require("util");
-const waitUntil = util.promisify(setTimeout);
 
 /*
  *
@@ -11,24 +10,33 @@ const waitUntil = util.promisify(setTimeout);
  *
  */
 
+// Wait function
+const waitUntil = util.promisify(setTimeout);
+
 // Translator function
-function translateText(string, langTo) {
-  if (langTo === "en") return string;
+function translateText(msg, string, langTo) {
+  if (langTo === "en") bot.sendMessage(msg.chat.id, string);
   translate(string, { from: "en", to: langTo })
     .then((res) => {
-      console.log(res);
-      string = res.text;
+      bot.sendMessage(msg.chat.id, res.text);
     })
     .catch((err) => {
       console.error(err);
     });
-  return string;
 }
 
 // Banned word search function
 function isThereABannedWord(string) {
   if (string == undefined) return false;
-  const bannedWords = ["caca", "culo", "calvo"];
+  const bannedWords = [
+    "gilipollas",
+    "subnormal",
+    "retrasado",
+    "puta",
+    "polla",
+    "marica",
+    "maricón",
+  ];
   const arrayWords = string.split(" ");
   let isBanned = false;
   arrayWords.forEach((word) => {
@@ -45,29 +53,27 @@ function isThereABannedWord(string) {
 
 // Welcome command
 bot.onText(/^\/start/, (msg) => {
-  bot.sendMessage(
-    msg.chat.id,
-    translateText(
-      `Hello ${msg.from.first_name}. I'm your favorite group manager bot. Add me to your groups and give me admin so I can manage them.❤`,
-      msg.from.language_code
-    )
+  translateText(
+    msg,
+    `Hello ${msg.from.first_name}. I'm your favorite group manager bot. Add me to your groups and give me admin so I can manage them.❤`,
+    msg.from.language_code
   );
 });
 
+// Listener
 bot.on("message", (msg) => {
   // Welcome and farewell message
   if (msg.new_chat_members != undefined) {
     let info = bot.getChat(msg.chat.id);
 
-    bot.sendMessage(
-      msg.chat.id,
-      translateText(
-        `Hi ${msg.new_chat_member.first_name}! Welcome to ${msg.chat.title}\n\n` +
-          "The rules are as follows:\n1. Don't be rude. Watch your words and respect each other.\n" +
-          "2. Just relax and enjoy!",
-        msg.from.language_code
-      )
+    translateText(
+      msg,
+      `Hi ${msg.new_chat_member.first_name}! Welcome to ${msg.chat.title}\n\n` +
+        "The rules are as follows:\n1. Don't be rude. Watch your words and respect each other.\n" +
+        "2. Just relax and enjoy!",
+      msg.from.language_code
     );
+
     info
       .then((response) => {
         const description = response.description;
